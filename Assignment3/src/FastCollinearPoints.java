@@ -13,43 +13,39 @@ public class FastCollinearPoints {
 
     public FastCollinearPoints(Point[] points) {     // finds all line segments containing 4 or more points
         if (points == null) throw new NullPointerException();
+        for (int i = 0; i < points.length; i++) {
+            if (points[i] == null) throw new NullPointerException();
+        }
+
         lineSegments = new LineSegment[points.length];
 
         for (int i = 0; i < points.length; i++) {
-            //copy points array
-            Point[] cPoints = new Point[points.length - 1];
-            int k = 0;
+            //copy natural sorted array
+            Point[] cPoints = new Point[points.length];
             for (int j = 0; j < points.length; j++) {
-                if (i != j) {
-                    if (points[i].compareTo(points[j]) == 0) throw new IllegalArgumentException();
-                    cPoints[k++] = points[j];
-                }
-
+                if (i != j && points[i].compareTo(points[j]) == 0) throw new IllegalArgumentException();
+                cPoints[j] = points[j];
             }
 
             //sort by slope with points[i]
             Arrays.sort(cPoints, points[i].slopeOrder());
+
             Point largest = cPoints[0];
             Point smallest = cPoints[0];
             int ccount = 1;
-            double cslope = points[i].slopeTo(cPoints[0]);
-            for (int j = 1; j < points.length - 1; j++) {
-                double islope = points[i].slopeTo(cPoints[j]);
-                if (cslope == islope || cslope == -islope) {
-                    if (points[i].compareTo(cPoints[j]) < 0) {
-                        if (cPoints[j].compareTo(largest) > 0) largest = cPoints[j];
-                    } else {
-                        if (cPoints[j].compareTo(smallest) < 0) smallest = cPoints[j];
-                    }
+            for (int j = 1; j < points.length; j++) {
+                if (points[i].slopeTo(cPoints[j - 1]) == points[i].slopeTo(cPoints[j])) {
+                    if (smallest.compareTo(cPoints[j]) > 0)
+                        smallest = cPoints[j];
+                    else if (largest.compareTo(cPoints[j]) < 0)
+                        largest = cPoints[j];
                     ccount++;
-
                 } else {
                     if (ccount >= 3 && points[i].compareTo(smallest) < 0)
                         lineSegments[segmentCount++] = new LineSegment(points[i], largest);
-                    largest = cPoints[j];
-                    smallest = cPoints[j];
-                    cslope = points[i].slopeTo(cPoints[j]);
                     ccount = 1;
+                    smallest = cPoints[j];
+                    largest = cPoints[j];
                 }
             }
             if (ccount >= 3 && points[i].compareTo(smallest) < 0)
@@ -64,18 +60,18 @@ public class FastCollinearPoints {
     }
 
     public LineSegment[] segments() {  // the line segments
-        LineSegment[] lineSegments = new LineSegment[segmentCount];
+        LineSegment[] ls = new LineSegment[segmentCount];
         for (int i = 0; i < segmentCount; i++) {
-            lineSegments[i] = this.lineSegments[i];
+            ls[i] = this.lineSegments[i];
         }
-        return lineSegments;
+        return ls;
     }
 
     public static void main(String[] args) {
 
         // read the N points from a file
         args = new String[1];
-        args[0] = "test/input20.txt";
+        args[0] = "test/rs1423.txt";
         In in = new In(args[0]);
         int N = in.readInt();
         Point[] points = new Point[N];

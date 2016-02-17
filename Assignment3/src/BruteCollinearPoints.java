@@ -13,7 +13,16 @@ public class BruteCollinearPoints {
 
     public BruteCollinearPoints(Point[] points) {   // finds all line segments containing 4 points
         if (points == null) throw new NullPointerException();
-        lineSegments = new LineSegment[points.length / 4];
+        for (int i = 0; i < points.length; i++) {
+            if (points[i] == null) throw new NullPointerException();
+            for (int j = 0; j < points.length; j++) {
+                if (i != j && points[i].compareTo(points[j]) == 0) throw new
+                        IllegalArgumentException();
+
+            }
+        }
+        lineSegments = new LineSegment[points.length];
+
         Point pi;
         Point pj;
         Point pk;
@@ -28,9 +37,7 @@ public class BruteCollinearPoints {
                         pj = points[j];
                         pk = points[k];
                         pl = points[l];
-                        if (pi == null || pj == null || pk == null || pl == null) throw new NullPointerException();
-                        if (pi.compareTo(pj) == 0 || pi.compareTo(pk) == 0 || pi.compareTo(pl) == 0) throw new
-                                IllegalArgumentException();
+
                         if (pi.slopeTo(pj) == pi.slopeTo(pk) && pi.slopeTo(pj) == pi.slopeTo(pl)) {
                             // points are collinear
                             Point[] coPoints = new Point[4];
@@ -40,7 +47,6 @@ public class BruteCollinearPoints {
                             coPoints[3] = pl;
                             Arrays.sort(coPoints);
                             lineSegments[segmentCount++] = new LineSegment(coPoints[0], coPoints[3]);
-                            break jloop;
                         }
                     }
                 }
@@ -53,18 +59,18 @@ public class BruteCollinearPoints {
     }
 
     public LineSegment[] segments() {  // the line segments
-        LineSegment[] lineSegments = new LineSegment[segmentCount];
+        LineSegment[] ls = new LineSegment[segmentCount];
         for (int i = 0; i < segmentCount; i++) {
-            lineSegments[i] = this.lineSegments[i];
+            ls[i] = this.lineSegments[i];
         }
-        return lineSegments;
+        return ls;
     }
 
     public static void main(String[] args) {
 
         // read the N points from a file
-//        args = new String[1];
-//        args[0] = "test/input8.txt";
+        args = new String[1];
+        args[0] = "test/input40.txt";
         In in = new In(args[0]);
         int N = in.readInt();
         Point[] points = new Point[N];
