@@ -1,4 +1,5 @@
 import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.StdOut;
 
@@ -8,7 +9,7 @@ import java.util.Arrays;
  * Created by pramod on 2/15/16.
  */
 public class FastCollinearPoints {
-    private LineSegment[] lineSegments;
+    private Queue<LineSegment> lineSegments;
     private int segmentCount = 0;
 
     public FastCollinearPoints(Point[] points) {     // finds all line segments containing 4 or more points
@@ -17,7 +18,7 @@ public class FastCollinearPoints {
             if (points[i] == null) throw new NullPointerException();
         }
 
-        lineSegments = new LineSegment[points.length];
+        lineSegments = new Queue<LineSegment>();
 
         for (int i = 0; i < points.length; i++) {
             //copy natural sorted array
@@ -41,28 +42,31 @@ public class FastCollinearPoints {
                         largest = cPoints[j];
                     ccount++;
                 } else {
-                    if (ccount >= 3 && points[i].compareTo(smallest) < 0)
-                        lineSegments[segmentCount++] = new LineSegment(points[i], largest);
+                    if (ccount >= 3 && points[i].compareTo(smallest) < 0) {
+                        lineSegments.enqueue(new LineSegment(points[i], largest));
+                        segmentCount++;
+                    }
                     ccount = 1;
                     smallest = cPoints[j];
                     largest = cPoints[j];
                 }
             }
-            if (ccount >= 3 && points[i].compareTo(smallest) < 0)
-                lineSegments[segmentCount++] = new LineSegment(points[i], largest);
+            if (ccount >= 3 && points[i].compareTo(smallest) < 0) {
+                lineSegments.enqueue(new LineSegment(points[i], largest));
+                segmentCount++;
+            }
         }
-
-
     }
 
-    public int numberOfSegments() {// the number of line segments
+    public int numberOfSegments() {    // the number of line segments
         return segmentCount;
     }
 
     public LineSegment[] segments() {  // the line segments
         LineSegment[] ls = new LineSegment[segmentCount];
-        for (int i = 0; i < segmentCount; i++) {
-            ls[i] = this.lineSegments[i];
+        int i = 0;
+        for (LineSegment segment : lineSegments) {
+            ls[i++] = segment;
         }
         return ls;
     }
