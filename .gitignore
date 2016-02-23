@@ -15,3 +15,7 @@ hs_err_pid*
 # Intellij Idea files
 .idea
 *.iml
+
+#OSX files
+.DS_Store
+
